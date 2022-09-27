@@ -4,17 +4,7 @@
 // nodeIntegration is set to true in webPreferences.
 // Use preload.js to selectively enable features
 // needed in the renderer process.
-
-/* eslint-disable @typescript-eslint/ban-ts-comment */
-
-// const IIFE = (() => {
-//   console.log("IIFE");
-// })();
-// IIFE();
-
-// @ts-ignore:next-line
 const versions = window.versions;
-// @ts-ignore:next-line
 const darkMode = window.darkMode;
 
 const bindPing = () => {
