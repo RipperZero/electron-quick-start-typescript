@@ -6,10 +6,11 @@
 // needed in the renderer process.
 const versions = window.versions;
 const darkMode = window.darkMode;
+const electronAPI = window.electronAPI;
 
 const bindPing = () => {
   document.getElementById("button-ping").addEventListener("click", async () => {
-    const res = await versions.ping();
+    const res = await electronAPI.ping();
 
     console.log("handleOnClickBtn res ----- " + res);
   });
@@ -33,11 +34,30 @@ const bindDarkMode = () => {
     });
 };
 
+const bindElectronAPI = () => {
+  const setButton = document.getElementById("button-title");
+  const titleInput = document.getElementById("input-title") as HTMLInputElement;
+
+  setButton.addEventListener("click", () => {
+    const title = titleInput.value;
+    window.electronAPI.setTitle(title);
+  });
+
+  const btn = document.getElementById("button-filePath");
+  const filePathElement = document.getElementById("filePath");
+
+  btn.addEventListener("click", async () => {
+    const filePath = await window.electronAPI.openFile();
+    filePathElement.innerText = filePath ?? "";
+  });
+};
+
 const IIFE = () => {
   const information = document.getElementById("info");
   information.innerText = `本应用正在使用 Chrome (v${versions.chrome()}), Node.js (v${versions.node()}), 和 Electron (v${versions.electron()})`;
 
   bindPing();
   bindDarkMode();
+  bindElectronAPI();
 };
 IIFE();

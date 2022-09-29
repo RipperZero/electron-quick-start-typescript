@@ -4,12 +4,7 @@
     "noImplicitAny": true,
     "sourceMap": true,
     "outDir": "dist",
-    "baseUrl": ".",
-    "paths": {
-      "*": ["node_modules/*"]
-    }
+    "baseUrl": "src"
   },
-  "include": [
-    "src/**/*"
-  ]
+  "include": ["src"]
 }
