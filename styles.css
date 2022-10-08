@@ -2,10 +2,19 @@
 
 /* Add styles here to customize the appearance of your app */
 @media (prefers-color-scheme: dark) {
-    body { background: #333; color: white; }
+  body {
+    background: #333;
+    color: white;
   }
-  
-  @media (prefers-color-scheme: light) {
-    body { background: #ddd; color: black; }
+}
+
+@media (prefers-color-scheme: light) {
+  body {
+    background: #ddd;
+    color: black;
   }
-  
+}
+
+body {
+  user-select: none;
+}

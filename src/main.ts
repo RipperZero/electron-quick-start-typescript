@@ -1,4 +1,13 @@
-import { app, BrowserWindow, dialog, ipcMain, nativeTheme } from "electron";
+import {
+  app,
+  BrowserWindow,
+  dialog,
+  ipcMain,
+  Menu,
+  MenuItem,
+  nativeTheme,
+  Response,
+} from "electron";
 import { join } from "path";
 // import path = require("path");
 
@@ -12,6 +21,11 @@ const createWindow = () => {
     },
   });
 
+  // TODO bluetooth
+  // bluetooth(mainWindow);
+
+  createCustomMenu(mainWindow);
+
   // and load the index.html of the app.
   mainWindow.loadFile(join(__dirname, "../index.html"));
   // load from url
@@ -19,6 +33,8 @@ const createWindow = () => {
 
   // Open the DevTools.
   // mainWindow.webContents.openDevTools();
+
+  // return mainWindow;
 };
 
 // This method will be called when Electron has finished
@@ -26,7 +42,7 @@ const createWindow = () => {
 // Some APIs can only be used after this event occurs.
 app.whenReady().then(() => {
   addToIpcMain();
-  createWindow();
+  const mainWindow = createWindow();
 
   app.on("activate", () => {
     // On macOS it's common to re-create a window in the app when the
@@ -90,4 +106,89 @@ const addToIpcMain = () => {
 
     return filePaths[0];
   });
+  ipcMain.on("counter-value", (_event, value) => {
+    console.log(value);
+  });
+};
+
+// @see https://www.electronjs.org/zh/docs/latest/tutorial/devices
+// TODO bluetooth
+const bluetooth = (mainWindow: BrowserWindow) => {
+  mainWindow.webContents.on(
+    "select-bluetooth-device",
+    (event, deviceList, callback) => {
+      event.preventDefault();
+      if (deviceList && deviceList.length > 0) {
+        callback(deviceList[0].deviceId);
+      }
+    },
+  );
+
+  let bluetoothPinCallback: (response: Response) => void;
+  mainWindow.webContents.session.setBluetoothPairingHandler(
+    (details, callback) => {
+      // Send a message to the renderer to prompt the user to confirm the pairing.
+      mainWindow.webContents.send("bluetooth-pairing-request", details);
+      bluetoothPinCallback = callback;
+    },
+  );
+
+  // Listen for a message from the renderer to get the response for the Bluetooth pairing.
+  ipcMain.on("bluetooth-pairing-response", (_event, response) => {
+    bluetoothPinCallback(response);
+  });
+};
+
+const createCustomMenu = (mainWindow: BrowserWindow) => {
+  // const menu = new Menu();
+  // menu.append(
+  //   new MenuItem({
+  //     label: "Electron",
+  //     submenu: [
+  //       {
+  //         role: "help",
+  //         accelerator:
+  //           process.platform === "darwin" ? "Alt+Cmd+I" : "Alt+Shift+I",
+  //         click: () => {
+  //           console.log("Electron rocks!");
+  //         },
+  //       },
+  //     ],
+  //   }),
+  // );
+  // Create the Menu(Counter)
+  const menu = Menu.buildFromTemplate([
+    {
+      label: "Electron",
+      submenu: [
+        {
+          role: "help",
+          accelerator:
+            process.platform === "darwin" ? "Alt+Cmd+I" : "Alt+Shift+I",
+          click: () => {
+            console.log("Electron rocks!");
+          },
+        },
+      ],
+    },
+    {
+      label: "Counter",
+      submenu: [
+        {
+          label: "Increment",
+          click: () => {
+            mainWindow.webContents.send("update-counter", 1);
+          },
+        },
+        {
+          label: "Decrement",
+          click: () => {
+            mainWindow.webContents.send("update-counter", -1);
+          },
+        },
+      ],
+    },
+  ]);
+
+  Menu.setApplicationMenu(menu);
 };

@@ -40,16 +40,71 @@ const bindElectronAPI = () => {
 
   setButton.addEventListener("click", () => {
     const title = titleInput.value;
-    window.electronAPI.setTitle(title);
+    electronAPI.setTitle(title);
   });
 
   const btn = document.getElementById("button-filePath");
   const filePathElement = document.getElementById("filePath");
 
   btn.addEventListener("click", async () => {
-    const filePath = await window.electronAPI.openFile();
+    const filePath = await electronAPI.openFile();
     filePathElement.innerText = filePath ?? "";
   });
+
+  const counter = document.getElementById("counter");
+  electronAPI.handleCounter((event, value) => {
+    const oldValue = Number(counter.innerText);
+    const newValue = oldValue + value;
+    counter.innerText = newValue.toString();
+    event.sender.send("counter-value", newValue);
+  });
+
+  // TODO bluetooth
+  // document
+  //   .getElementById("button-bluetooth")
+  //   .addEventListener("click", async () => {
+  //     /** @ts-ignore:next-line */
+  //     const device = await navigator.bluetooth.requestDevice({
+  //       acceptAllDevices: true,
+  //     });
+  //     document.getElementById("device-name").innerHTML =
+  //       device.name || `ID: ${device.id}`;
+  //   });
+  // electronAPI.bluetoothPairingRequest((_event, details) => {
+  //   const response: {
+  //     confirmed: boolean;
+  //     pin: string;
+  //   } = {
+  //     confirmed: false,
+  //     pin: "",
+  //   };
+
+  //   switch (details.pairingKind) {
+  //     case "confirm": {
+  //       response.confirmed = confirm(
+  //         `Do you want to connect to device ${details.deviceId}?`,
+  //       );
+  //       break;
+  //     }
+  //     case "confirmPin": {
+  //       response.confirmed = confirm(
+  //         `Does the pin ${details.pin} match the pin displayed on device ${details.deviceId}?`,
+  //       );
+  //       break;
+  //     }
+  //     case "providePin": {
+  //       const pin = prompt(`Please provide a pin for ${details.deviceId}.`);
+  //       if (pin) {
+  //         response.pin = pin;
+  //         response.confirmed = true;
+  //       } else {
+  //         response.confirmed = false;
+  //       }
+  //     }
+  //   }
+
+  //   electronAPI.bluetoothPairingResponse(response);
+  // });
 };
 
 const IIFE = () => {
