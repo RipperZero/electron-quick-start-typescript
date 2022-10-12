@@ -63,7 +63,7 @@ const bindElectronAPI = () => {
   // document
   //   .getElementById("button-bluetooth")
   //   .addEventListener("click", async () => {
-  //     /** @ts-ignore:next-line */
+  //     // @ts-ignore:next-line
   //     const device = await navigator.bluetooth.requestDevice({
   //       acceptAllDevices: true,
   //     });
